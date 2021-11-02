@@ -1,0 +1,144 @@
+#!/usr/bin/python
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+import time
+import json
+import httplib
+from multiprocessing import Process
+
+# set the HTTP Proxy host and port
+# like
+# HTTP_PROXY_HOST = 'proxy-host-name-or-ip'
+# HTTP_PROXY_PORT = 3128
+#
+HTTP_PROXY_HOST = None
+HTTP_PROXY_PORT = None
+
+
+def api_request(method, uri, body=None):
+  token = get_token()
+  conn = httplib.HTTPSConnection('www.googleapis.com')
+  if HTTP_PROXY_HOST:
+    conn = httplib.HTTPConnection(HTTP_PROXY_HOST, HTTP_PROXY_PORT)
+    conn.connect()
+    uri = 'https://www.googleapis.com' +  uri
+  conn.request(method,
+               uri,
+               body,
+               {'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'})
+  response = conn.getresponse()
+  return json.loads(response.read())
+
+def metadata_request(uri):
+  conn = httplib.HTTPConnection('metadata')
+  conn.request('GET', uri, None, {'Metadata-Flavor': 'Google'})
+  response = conn.getresponse()
+  return response.read()
+
+def get_token():
+  token_uri = '/computeMetadata/v1/instance/service-accounts/default/token'
+  token_obj = json.loads(metadata_request(token_uri))
+  return token_obj['access_token']
+
+def get_project_id():
+  project_id_uri = '/computeMetadata/v1/project/project-id'
+  return metadata_request(project_id_uri)
+
+def get_instance_id():
+  instance_uri = '/computeMetadata/v1/instance/hostname'
+  full_name = metadata_request(instance_uri)
+  instance_id = full_name[0:full_name.find('.')]
+  return instance_id
+
+def get_route(route_id):
+  project_id = get_project_id()
+  route_urt = '/compute/v1/projects/{0}/global/routes/{1}?alt=json'
+  route_uri = route_urt.format(project_id, route_id)
+  return api_request('GET', route_uri)
+
+def wait_for_operation(operation):
+  print ('waiting for' + json.dumps(operation))
+  operation_id = operation.get('name', None)
+  if not operation_id:
+    return
+  project_id = get_project_id()
+  urlt = '/compute/v1/projects/{0}/global/operations/{1}?alt=json'
+  operation_uri = urlt.format(project_id,operation_id)
+  operation_prime = api_request('GET', operation_uri)
+  status  = operation_prime['status']
+  if (status == 'RUNNING' or status == 'PENDING'):
+    time.sleep(1)
+    wait_for_operation(operation_prime)
+
+def delete_route(route_id):
+  project_id = get_project_id()
+  urt = '/compute/v1/projects/{0}/global/routes/{1}?alt=json'
+  uri = urt.format(project_id, route_id)
+  operation = api_request('DELETE', uri)
+  # assume it exists already
+  if operation.get('error',{}):
+    return
+  return wait_for_operation(operation)
+
+def get_zone():
+  zone_uri = '/computeMetadata/v1/instance/zone'
+  full_zone = metadata_request(zone_uri)
+  zone_id = full_zone[full_zone.rfind('/')+1:]
+  return zone_id
+
+
+def create_route(route_id, priority):
+  project_id = get_project_id()
+  instance_id = get_instance_id()
+  zone_id = get_zone()
+  bodyt = '{{"destRange": "${floating_ip}/32", "name": "{3}", "network": "https://www.googleapis.com/compute/v1/projects/{0}/global/networks/${network_name}", "nextHopInstance": "https://www.googleapis.com/compute/v1/projects/{0}/zones/{1}/instances/{2}", "priority": {4}}}'
+  body = bodyt.format(project_id, zone_id, instance_id, route_id, priority)
+  print body
+  urt = '/compute/v1/projects/{0}/global/routes?alt=json'
+  uri = urt.format(project_id)
+  operation = api_request('POST', uri, body)
+  return wait_for_operation(operation)
+
+
+def change_route(route_id):
+  create_route(route_id + '-p', 900)
+  delete_route(route_id)
+  create_route(route_id, 1000)
+  delete_route(route_id + '-p')
+
+
+def change_route_async(route_id):
+  p = Process(target=change_route, args=(route_id,))
+  p.start()
+  return p
+
+def main():
+  route_id = '${route_name}'
+  route = get_route(route_id)
+  next_hop_url = route.get('nextHopInstance', '')
+  next_hop_id =   next_hop_url[next_hop_url.rfind('/')+1:]
+  instance_id = get_instance_id()
+  processes = []
+
+  if ((not next_hop_id) or next_hop_id != instance_id):
+    # change or more route asyncronously.
+    processes.append(change_route_async(route_id))
+
+  map(lambda p: p.join(), processes)
+
+
+if __name__ == '__main__':
+  main()

@@ -1,0 +1,7 @@
+#Ignore tfstate and credentials
+*.tfstate
+*.tfvars
+*.backup
+tf-cred.json
+.terraform*
+

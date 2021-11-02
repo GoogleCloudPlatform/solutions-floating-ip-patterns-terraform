@@ -1,0 +1,58 @@
+#!/usr/bin/env sh
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+apt-get update
+apt-get -y install nginx keepalived
+echo '<HTML><BODY>This is server ${server_number}</BODY></HTML>' > /var/www/html/index.html
+cat <<EOF >> /etc/network/interfaces
+auto eth0:0
+iface eth0:0 inet static
+  address ${floating_ip}
+  netmask 255.255.255.255
+EOF
+service networking restart
+cat << EOF > /etc/keepalived/switch_vip.py
+${python_script}
+EOF
+chmod +x /etc/keepalived/switch_vip.py
+cat << EOF > /etc/keepalived/keepalived.conf
+global_defs {
+    script_user www-data
+}
+vrrp_script nginx {
+  script "/bin/pidof nginx"
+  interval 2
+}
+
+vrrp_instance floating_ip {
+  state ${state}
+  interface eth0
+  track_script {
+    nginx
+  }
+  unicast_src_ip ${ip}
+  unicast_peer {
+    ${peer_ip}
+  }
+  virtual_router_id 50
+  priority ${priority} 
+  authentication {
+    auth_type PASS
+    auth_pass ${vrrp_password}
+  }
+  notify_master "/etc/keepalived/switch_vip.py"
+}
+EOF
+service keepalived restart

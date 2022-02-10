@@ -103,7 +103,7 @@ You can see the variables of this example in the `variables.tf` file or in the [
    ```
    The output lists the resources that Terraform provisions when you apply the configuration.
 
-   If you want to make any changes, edit the configuration, and then run `terraform validate` and `terraform plan` again.\
+   If you want to make any changes, edit the configuration, and then run `terraform validate` and `terraform plan` again.
 
 ## Provisioning resources
 When no further changes are necessary in the configuration, deploy the resources:

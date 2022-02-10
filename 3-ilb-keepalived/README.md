@@ -1,14 +1,14 @@
-# Deploying load balancing using failover and heartbeat exposed health checks
+# Deploying load balancing with failover and heartbeat-exposed health checks
 
 
-This document provides instructions on how to deploy the example implementation of the load balancing using failover and heartbeat exposed health checks pattern
- as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-floating-ip-addresses#active-active-load-balancing) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the load balancing with failover and heartbeat-exposed health checks pattern
+ as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#heartbeat-exposed) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
 The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate instance group behind an internal TCP/UDP load balancer. The second instance group is set as failover backend service for the load balancer so traffic usually flows to the first instance group. Keepalived is installed on both nginx instances to decide on the primary and backup instance. The primary instance opens a socket that is checked by the health check. When the primary instance fails, keepalived closes the socket while keepalived on the second instance opens the socket, now the health check is only answered on the secondary instance and traffic fails over to the second instance group.
 
-![Architecture for load balancing using failover and heartbeat exposed health checks](architecture.png)
+![Architecture for load balancing with failover and heartbeat-exposed health checks](architecture.svg)
 
 ## Objectives
 Provision the following resources in Google Cloud by using a Terraform template:

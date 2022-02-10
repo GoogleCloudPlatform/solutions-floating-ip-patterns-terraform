@@ -1,12 +1,12 @@
-# Deploying the ECMP routes pattern
+# Deploying the equal-cost multipath (ECMP) routes pattern
 
-This document provides instructions on how to deploy the example implementation of the pattern using ECMP routes as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-floating-ip-addresses#using-ecmp-routes) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the pattern using equal-cost multipath (ECMP) routes as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_equal-cost_multipath_ecmp_routes) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the static route) you receive a response that identifies the first or second web server.
 
-The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate autohealing instance group. It also contains a static VPC routes with priority 500 with the floating IP address as a destination and the first instance as a next hop. A second VPC route with equal priority and destination points at the second instance as the next hop, therefore traffic to this IP address is equally distributed to both instances.
+The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate autohealing instance group. It also contains a static Google Cloud route with priority value 500 with the floating IP address as a destination and the first instance as a next hop. A second  route with equal priority value and destination points at the second instance as the next hop, therefore traffic to this IP address is equally distributed to both instances.
 
-![Architecture for $PATTERNNAME](architecture.png)
+![Architecture for the equal-cost multipath (ECMP) routes pattern](architecture.svg)
 
 ## Objectives
 Provision the following resources in Google Cloud by using a Terraform template:

@@ -13,7 +13,7 @@ Provision the following resources in Google Cloud by using a Terraform template:
 * One VPC network and subnetwork that connects all resources
 * Two Compute Engine instances running nginx
 * A Compute Engine instance used as an internal client
-* A set of firewall rules to allow the client VM to reach the nginx instances using HTTP and to allow connecting by using [SSH through IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding#tunneling_ssh_connections).
+* A set of firewall rules to allow the client VM to reach the nginx instances using HTTP and to allow connecting by using [SSH through IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding#tunneling_ssh_connections)
 * An internal TCP load balancer distributing the traffic to the two nginx instances
 
 
@@ -51,7 +51,7 @@ You can complete this tutorial using [Cloud Shell](https://cloud.google.com/shel
 ## Configuring the Terraform variables
 The Terraform code that you downloaded includes variables that you can use to customize the deployment based on your requirements. For example, you can adjust the subnet CIDR ranges and specify the project where the resources should be deployed.
 
-You can see the variables of this example in the `variables.tf` file or in the [table below](#variables).
+You can see the variables of this example in the `variables.tf` file or in the [following table](#variables).
 
 1. In the code that you downloaded, enter the `1-ilb-active-active` subdirectory: `cd floating-ip-patterns/1-ilb-active-active`.
 
@@ -120,7 +120,7 @@ When no further changes are necessary in the configuration, deploy the resources
 You have now deployed the example implementation for the Active-active load balancing pattern.
 
 ## Testing your deployment
-1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console
+1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console.
 1. In the list of virtual machine instances, click *SSH* in the row of the instance named `client`.
    A separate window is opened that connects to the example client VM for this deployment.
 1. On the client VM, run:

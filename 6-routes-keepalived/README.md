@@ -14,7 +14,7 @@ Provision the following resources in Google Cloud by using a Terraform template:
 * Two Compute Engine instances running nginx 
 * A Compute Engine instance used as an internal client
 * A set of firewall rules to allow the client VM to reach the nginx instances using HTTP, to allow VRRP for keepalived between the nginx instances and to allow connecting by using [SSH through IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding#tunneling_ssh_connections)
-* A routes using the floating IP address as destination and the primary nginx instance as next hop. This route is dynamically updated when `keepalived` notices a state change.
+* A routes using the floating IP address as destination and the primary nginx instance as next hop. This route is dynamically updated when `keepalived` notices a state change
 
 ## Costs
 This tutorial uses billable components of Google Cloud:
@@ -40,25 +40,25 @@ You can complete this tutorial using [Cloud Shell](https://cloud.google.com/shel
 
    * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 0.15.0 or later.
 
-   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
-1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication)
+1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
 
-1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`
+1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`.
 
 ## Configuring the Terraform variables
 The Terraform code that you downloaded includes variables that you can use to customize the deployment based on your requirements. For example, you can adjust the subnet CIDR ranges and specify the project where the resources should be deployed.
 
-You can see the variables of this example in the `variables.tf` file or in the [table below](#variables)
+You can see the variables of this example in the `variables.tf` file or in the [following table](#variables).
 
-1. In the code that you downloaded, enter the `6-routes-keepalived` subdirectory: `cd floating-ip-patterns/6-routes-keepalived`
+1. In the code that you downloaded, enter the `6-routes-keepalived` subdirectory: `cd floating-ip-patterns/6-routes-keepalived`.
 
 1. Identify the variables for which you need to assign values:
 
    * Variables that don't have a default value (for example, `project_id`).
    * Variables with a default value that you want to change.
 
-      For example, `region` and `zone` is set to deploy all resources in the `us-central1-c` zone by default, but you can deploy in a [region of your choice](https://cloud.google.com/compute/docs/regions-zones).
+      For example, `region` and `zone` are set to deploy all resources in the `us-central1-c` zone by default, but you can deploy in a [region of your choice](https://cloud.google.com/compute/docs/regions-zones).
 
 1. Create a text file named `terraform.tfvars`.
 
@@ -75,7 +75,7 @@ You can see the variables of this example in the `variables.tf` file or in the [
    project_id = "my_project"
    vrrp_password = "mysecretpassword"
    ```
-   The value that you assign to each variable must match the type of that variable as declared in `variables.tf` or [the table below](#Variables).
+   The value that you assign to each variable must match the type of that variable as declared in `variables.tf` or [the following table](#Variables).
 1. Initialize Terraform:
    ```
    terraform init
@@ -116,10 +116,10 @@ When no further changes are necessary in the configuration, deploy the resources
    Apply complete!
    ```
 
-You have now deployed the example implementation for the Active-active load balancing pattern.
+You have now deployed the example implementation for the the pattern that uses a heartbeat mechanism to switch a route's next hop.
 
 ## Testing your deployment
-1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console
+1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console.
 1. In the list of virtual machine instances, click *SSH* in the row of the instance named `client`.
    A separate window is opened that connects to the example client VM for this deployment.
 1. On the client VM, run:

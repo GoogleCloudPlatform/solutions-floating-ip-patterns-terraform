@@ -4,7 +4,7 @@ This document provides instructions on how to deploy the example implementation 
 
 This pattern deploys one [nginx](https://nginx.org/en/) webserver.
 
-The following diagram shows the architecture that you deploy. It consists of a Compute Engine instances in an autohealing instance group size 1. When the health check of the instance fails the instance gets automatically replaced
+The following diagram shows the architecture that you deploy. It consists of a Compute Engine instances in an autohealing instance group size 1. When the health check of the instance fails the instance gets automatically replaced.
 
 ![Architecture for the pattern using an autohealing single instance](architecture.svg)
 
@@ -40,18 +40,18 @@ You can complete this tutorial using [Cloud Shell](https://cloud.google.com/shel
 
    * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 0.15.0 or later.
 
-   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
-1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication)
+1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
 
-1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`
+1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`.
 
 ## Configuring the Terraform variables
 The Terraform code that you downloaded includes variables that you can use to customize the deployment based on your requirements. For example, you can adjust the subnet CIDR ranges and specify the project where the resources should be deployed.
 
-You can see the variables of this example in the `variables.tf` file or in the [table below](#variables)
+You can see the variables of this example in the `variables.tf` file or in the [following table](#variables).
 
-1. In the code that you downloaded, enter the `7-autohealing-instance` subdirectory: `cd floating-ip-patterns/7-autohealing-instance`
+1. In the code that you downloaded, enter the `7-autohealing-instance` subdirectory: `cd floating-ip-patterns/7-autohealing-instance`.
 
 1. Identify the variables for which you need to assign values:
 
@@ -115,10 +115,10 @@ When no further changes are necessary in the configuration, deploy the resources
    Apply complete!
    ```
 
-You have now deployed the example implementation for the Active-active load balancing pattern.
+You have now deployed the example implementation for the autohealing single instance pattern.
 
 ## Testing your deployment
-1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console
+1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console.
 1. In the list of virtual machine instances, click *SSH* in the row of the instance named `client`.
    A separate window is opened that connects to the example client VM for this deployment.
 1. On the client VM, run:

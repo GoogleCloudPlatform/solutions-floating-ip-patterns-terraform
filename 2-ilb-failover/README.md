@@ -44,18 +44,18 @@ You can complete this tutorial using [Cloud Shell](https://cloud.google.com/shel
 
    * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 0.15.0 or later.
 
-   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
-1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication)
+1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
 
-1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`
+1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`.
 
 ## Configuring the Terraform variables
 The Terraform code that you downloaded includes variables that you can use to customize the deployment based on your requirements. For example, you can adjust the subnet CIDR ranges and specify the project where the resources should be deployed.
 
-You can see the variables of this example in the `variables.tf` file or in the [following table](#variables)
+You can see the variables of this example in the `variables.tf` file or in the [following table](#variables).
 
-1. In the code that you downloaded, enter the `2-ilb-failover` subdirectory: `cd floating-ip-patterns/2-ilb-failover`
+1. In the code that you downloaded, enter the `2-ilb-failover` subdirectory: `cd floating-ip-patterns/2-ilb-failover`.
 
 1. Identify the variables for which you need to assign values:
 
@@ -123,7 +123,7 @@ When no further changes are necessary in the configuration, deploy the resources
 You have now deployed the example implementation for the load balancing using failover and application-exposed health checks pattern.
 
 ## Testing your deployment
-1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console
+1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console.
 1. In the list of virtual machine instances, click *SSH* in the row of the instance named `client`.
    A separate window is opened that connects to the example client VM for this deployment.
 1. On the client VM, run:
@@ -136,7 +136,7 @@ You have now deployed the example implementation for the load balancing using fa
 1. If you run the `curl` command repeatedly you can see that requests all requests are served by the primary instance.
 
 Optionally, to test a failure case:
-1. In the list of virtual machine instances, click *SSH* in the row of the instance with a name starting with `nginx-primary`
+1. In the list of virtual machine instances, click *SSH* in the row of the instance with a name starting with `nginx-primary`.
 1. On the `nginx-primary` VM, stop the `nginx` service by running:
    ```
    sudo service nginx stop

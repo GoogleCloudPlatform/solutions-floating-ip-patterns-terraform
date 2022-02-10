@@ -1,14 +1,14 @@
-# Deploying load balancing using failover and application-exposed health checks
+# Deploying load balancing with failover and application-exposed health checks
 
 
-This document provides instructions on how to deploy the example implementation of the load balancing using failover and application-exposed health checks pattern
- as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#application-exposed) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the load balancing with failover and application-exposed health checks pattern
+as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#application-exposed) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers  using a floating IP address. When you request the document root (`/`) from the floating IP address (the IP address of the Internal TCP/UDP Load Balancer) you receive a response that identifies the first or second web server.
 
 The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate instance group behind an internal TCP/UDP load balancer. The second instance group is set as failover backend service for the load balancer so traffic usually flows to the first instance group. Only when the health check of the primary instance group fails, traffic fails over to the second instance group.
 
-![Architecture for load balancing using failover and native health checks](architecture.png)
+![Architecture for load balancing with failover and application-exposed health checks](architecture.svg)
 
 ## Objectives
 Provision the following resources in Google Cloud by using a Terraform template:

@@ -1,12 +1,12 @@
-# Deploying the pattern using heartbeat to switch route destinations
+# Deploying the pattern using a heartbeat mechanism to switch a route's next hop
 
-This document provides instructions on how to deploy the example implementation of the pattern using heartbeat to switch route destinations as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-floating-ip-addresses#using-heartbeat-to-swtich-route-destinations) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the pattern using a heartbeat mechanism to switch a route's next hop as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_a_heartbeat_mechanism_to_switch_a_routes_next_hop) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
 The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances running nginx. It also contains a static VPC route with the floating IP address as a destination and the primary instance as a next hop. `keepalived` is running on the nginx instances and when it detects a failure of the primary instance, the secondary instance updates the static VPC route to use the secondary instance as the next hop.
 
-![Architecture for using heartbeat to switch route destinations](architecture.png)
+![Architecture for using a heartbeat mechanism to switch a route's next hop](architecture.svg)
 
 ## Objectives
 Provision the following resources in Google Cloud by using a Terraform template:

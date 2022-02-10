@@ -2,7 +2,7 @@
 
 This document provides instructions on how to deploy the example implementation of the Active-active load balancing pattern as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#active-active_load_balancing) using [Terraform](https://www.terraform.io/).
 
-This pattern deploys two [nginx](https://nginx.org/en/) webservers  utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
+This pattern deploys two [nginx](https://nginx.org/en/) webservers  using a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
 The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances in a single instance group behind an internal TCP/UDP load balancer that distributes traffic equally between both instances.
 
@@ -60,7 +60,7 @@ You can see the variables of this example in the `variables.tf` file or in the [
    * Variables that don't have a default value (for example, `project_id`).
    * Variables with a default value that you want to change.
 
-      For example, `region` and `zone` is set to deploy all resources in the `us-central1-c` zone by default, but you can deploy in a [region of your choice](https://cloud.google.com/compute/docs/regions-zones).
+      For example, `region` and `zone` are set to deploy all resources in the `us-central1-c` zone by default, but you can deploy in a [region of your choice](https://cloud.google.com/compute/docs/regions-zones).
 
 1. Create a text file named `terraform.tfvars`.
 
@@ -76,7 +76,7 @@ You can see the variables of this example in the `variables.tf` file or in the [
    zone = "europe-west4-c"
    project_id = "my_project"
    ```
-   The value that you assign to each variable must match the type of that variable as declared in `variables.tf` or [the table below](#Variables).
+   The value that you assign to each variable must match the type of that variable as declared in `variables.tf` or [the following table](#Variables).
 1. Initialize Terraform:
    ```
    terraform init
@@ -117,12 +117,12 @@ When no further changes are necessary in the configuration, deploy the resources
    Apply complete!
    ```
 
-You have now deployed the example implementation for the Active-active load balancing pattern.
+You have now deployed the example implementation for the active-active load balancing pattern.
 
 ## Testing your deployment
 1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console.
 1. In the list of virtual machine instances, click *SSH* in the row of the instance named `client`.
-   A separate window is opened that connects to the example client VM for this deployment.
+   A separate window opens that connects to the example client VM for this deployment.
 1. On the client VM, run:
    ```
    curl 10.100.3.1

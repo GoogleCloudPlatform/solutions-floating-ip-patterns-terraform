@@ -1,12 +1,12 @@
 # Deploying the different priority routes pattern
 
-This document provides instructions on how to deploy the example implementation of the different priority route pattern as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-floating-ip-addresses#using-different-priority-routes) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the different priority route pattern as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_different_priority_routes) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
-The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate autohealing instance group. It also contains a static VPC routes with priority 500 with the floating IP address as a destination and the primary instance as a next hop. A second VPC route with priority 1000 and destination points at the secondary instance as the next hop. Therefore, unless the primary instance is unreachable, all traffic flows to the primary instance.
+The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate autohealing instance group. It also contains a static Google Cloud routes with priority value 500 with the floating IP address as a destination and the primary instance as a next hop. A second static route with priority value 1000 and destination points at the secondary instance as the next hop. Therefore, unless the primary instance is unreachable, all traffic flows to the primary instance.
 
-![Architecture for using different priority routes](architecture.png)
+![Architecture for using different priority routes](architecture.svg)
 
 ## Objectives
 Provision the following resources in Google Cloud by using a Terraform template:

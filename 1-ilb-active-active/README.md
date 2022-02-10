@@ -1,12 +1,12 @@
-# Deploying the active-active load balancing pattern
+# Deploying Active-active load balancing pattern
 
-This document provides instructions on how to deploy the example implementation of the active-active load balancing pattern as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#active-active_load_balancing) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the Active-active load balancing pattern as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#active-active_load_balancing) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers  using a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
 The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances in a single instance group behind an internal TCP/UDP load balancer that distributes traffic equally between both instances.
 
-![Architecture for Active-active load-balancing pattern](architecture.png)
+![Architecture for Active-active load-balancing pattern](architecture.svg)
 
 ## Objectives
 Provision the following resources in Google Cloud by using a Terraform template:

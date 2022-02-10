@@ -6,7 +6,7 @@ This document provides instructions on how to deploy the example implementation 
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
-The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate instance group behind an internal TCP/UDP load balancer. The second instance group is set as failover backend service for the load balancer so traffic usually flows to the first instance group. Keepalived is installed on both nginx instances to decide on the primary and backup instance. The primary instance opens a socket that is checked by the health check. When the primary instance fails, keepalived closes the socket while keepalived on the second instance opens the socket, now the health check is only answered on the secondary instance and traffic fails over to the second instance group.
+The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances each in a separate instance group behind an internal TCP/UDP load balancer. The second instance group is set as failover backend service for the load balancer so traffic usually flows to the first instance group. Keepalived is installed on both nginx instances to decide on the primary and backup instance. The primary instance opens a socket that is checked by the health check. When the primary instance fails, keepalived closes the socket while keepalived on the second instance opens the socket. Now the health check is only answered on the secondary instance and traffic fails over to the second instance group.
 
 ![Architecture for load balancing with failover and heartbeat-exposed health checks](architecture.svg)
 
@@ -44,25 +44,25 @@ You can complete this tutorial using [Cloud Shell](https://cloud.google.com/shel
 
    * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 0.15.0 or later.
 
-   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+   * [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
-1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication)
+1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
 
-1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`
+1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`.
 
 ## Configuring the Terraform variables
 The Terraform code that you downloaded includes variables that you can use to customize the deployment based on your requirements. For example, you can adjust the subnet CIDR ranges and specify the project where the resources should be deployed.
 
-You can see the variables of this example in the `variables.tf` file or in the [table below](#variables)
+You can see the variables of this example in the `variables.tf` file or in the [following table](#variables).
 
-1. In the code that you downloaded, enter the `3-ilb-keepalived` subdirectory: `cd floating-ip-patterns/3-ilb-keepalived`
+1. In the code that you downloaded, enter the `3-ilb-keepalived` subdirectory: `cd floating-ip-patterns/3-ilb-keepalived`.
 
 1. Identify the variables for which you need to assign values:
 
    * Variables that don't have a default value (for example, `project_id`).
    * Variables with a default value that you want to change.
 
-      For example, `region` and `zone` is set to deploy all resources in the `us-central1-c` zone by default, but you can deploy in a [region of your choice](https://cloud.google.com/compute/docs/regions-zones).
+      For example, `region` and `zone` are set to deploy all resources in the `us-central1-c` zone by default, but you can deploy in a [region of your choice](https://cloud.google.com/compute/docs/regions-zones).
 
 1. Create a text file named `terraform.tfvars`.
 
@@ -79,7 +79,7 @@ You can see the variables of this example in the `variables.tf` file or in the [
    project_id = "my_project"
    vrrp_password = "mysecretpassword"
    ```
-   The value that you assign to each variable must match the type of that variable as declared in `variables.tf` or [the table below](#Variables).
+   The value that you assign to each variable must match the type of that variable as declared in `variables.tf` or [the following table](#Variables).
 1. Initialize Terraform:
    ```
    terraform init
@@ -120,10 +120,10 @@ When no further changes are necessary in the configuration, deploy the resources
    Apply complete!
    ```
 
-You have now deployed the example implementation for the Active-active load balancing pattern.
+You have now deployed the example implementation for the load balancing with failover and heartbeat-exposed health checks pattern.
 
 ## Testing your deployment
-1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console
+1. In your browser, go to the [VM instances](https://console.cloud.google.com/compute/instances) page for your project in the Google Cloud Console.
 1. In the list of virtual machine instances, click *SSH* in the row of the instance named `client`.
    A separate window is opened that connects to the example client VM for this deployment.
 1. On the client VM, run:
@@ -136,7 +136,7 @@ You have now deployed the example implementation for the Active-active load bala
 1. If you run the `curl` command repeatedly you can see that requests all requests are served by the primary instance.
 
 Optionally, to test a failure case:
-1. In the list of virtual machine instances, click *SSH* in the row of the instance with a name starting with `nginx-primary`
+1. In the list of virtual machine instances, click *SSH* in the row of the instance with a name starting with `nginx-primary`.
 1. On the `nginx-primary` VM, stop the `nginx` service by running:
    ```
    sudo service nginx stop

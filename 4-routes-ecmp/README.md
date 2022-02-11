@@ -1,6 +1,6 @@
 # Deploying the equal-cost multipath (ECMP) routes pattern
 
-This document provides instructions on how to deploy the example implementation of the pattern using equal-cost multipath (ECMP) routes as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_equal-cost_multipath_ecmp_routes) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the pattern using equal-cost multipath (ECMP) routes as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_equal-cost_multipath_ecmp_routes) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers using a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the static route) you receive a response that identifies the first or second web server.
 

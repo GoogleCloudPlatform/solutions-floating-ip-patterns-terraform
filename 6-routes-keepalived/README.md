@@ -1,6 +1,6 @@
 # Deploying the pattern using a heartbeat mechanism to switch a route's next hop
 
-This document provides instructions on how to deploy the example implementation of the pattern using a heartbeat mechanism to switch a route's next hop as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_a_heartbeat_mechanism_to_switch_a_routes_next_hop) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the pattern using a heartbeat mechanism to switch a route's next hop as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_a_heartbeat_mechanism_to_switch_a_routes_next_hop) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 

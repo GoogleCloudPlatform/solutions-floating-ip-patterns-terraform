@@ -1,6 +1,6 @@
-# Deploying patterns for Floating IP addresses on Google Cloud
+# Deploying patterns for Floating IP addresses in Compute Engine
 
-This repository provides example implementations of [patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine) that can be deployed using [Terraform](https://www.terraform.io/). To learn more about the different patterns, see the [companion guide](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine).
+This repository provides example implementations of [patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine) that can be deployed using [Terraform](https://www.terraform.io/). To learn more about the different patterns, see the [companion guide](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine).
 
 The implementations in the subdirectories of this repository are examples. Instead of a real application utilizing a floating IP address, in all examples two [nginx](https://nginx.org/en/) webservers are deployed that identify if the first or second server received the request when you request the root document(/).
 

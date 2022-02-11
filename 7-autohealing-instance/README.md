@@ -1,6 +1,6 @@
 # Deploying the pattern using an autohealing single instance
 
-This document provides instructions on how to deploy the example implementation of the pattern using an autohealing single instance as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#autohealing_single_instance) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the pattern using an autohealing single instance as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#autohealing_single_instance) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys one [nginx](https://nginx.org/en/) webserver.
 

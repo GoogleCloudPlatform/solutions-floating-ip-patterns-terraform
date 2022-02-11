@@ -2,7 +2,7 @@
 
 
 This document provides instructions on how to deploy the example implementation of the load balancing with failover and heartbeat-exposed health checks pattern
- as part of [Patterns for using floating IP addresses on Google Cloud](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#heartbeat-exposed) using [Terraform](https://www.terraform.io/).
+ as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#heartbeat-exposed) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 

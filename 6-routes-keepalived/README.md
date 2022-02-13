@@ -4,7 +4,7 @@ This document provides instructions on how to deploy the example implementation 
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers utilizing a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the internal TCP/UDP load balancer) you receive a response that identifies the first or second web server.
 
-The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances running nginx. It also contains a static VPC route with the floating IP address as a destination and the primary instance as a next hop. `keepalived` is running on the nginx instances and when it detects a failure of the primary instance, the secondary instance updates the static VPC route to use the secondary instance as the next hop.
+The following diagram shows the architecture that you deploy. It consists of two Compute Engine instances running nginx. It also contains a static VPC route with the floating IP address as a destination and the primary instance as a next hop. `keepalived` is running on the nginx instances. When `keepalived` on the secondary instance detects a failure of the primary instance, it calls a Cloud function that updates the static VPC route to use the secondary instance as the next hop.
 
 ![Architecture for using a heartbeat mechanism to switch a route's next hop](architecture.svg)
 
@@ -14,7 +14,9 @@ Provision the following resources in Google Cloud by using a Terraform template:
 * Two Compute Engine instances running nginx 
 * A Compute Engine instance used as an internal client
 * A set of firewall rules to allow the client VM to reach the nginx instances using HTTP, to allow VRRP for keepalived between the nginx instances and to allow connecting by using [SSH through IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding#tunneling_ssh_connections)
-* A routes using the floating IP address as destination and the primary nginx instance as next hop. This route is dynamically updated when `keepalived` notices a state change
+* A routes using the floating IP address as destination and the primary nginx instance as next hop.
+* A Google Cloud Function that dynamically updates the route and is called when `keepalived` notices a state change 
+* A Cloud Storage bucket and an object containing the code for the function
 
 ## Costs
 This tutorial uses billable components of Google Cloud:

@@ -23,10 +23,12 @@ iface eth0:0 inet static
   netmask 255.255.255.255
 EOF
 service networking restart
-cat << EOF > /etc/keepalived/switch_vip.py
-${python_script}
+cat << 'EOF' > /etc/keepalived/call_function.sh
+#!/bin/sh
+TOKEN=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${function_url}" -H "Metadata-Flavor: Google")
+curl -H "Authorization: Bearer $TOKEN" ${function_url}?target=${target}
 EOF
-chmod +x /etc/keepalived/switch_vip.py
+chmod +x /etc/keepalived/call_function.sh
 cat << EOF > /etc/keepalived/keepalived.conf
 global_defs {
     script_user www-data
@@ -52,7 +54,7 @@ vrrp_instance floating_ip {
     auth_type PASS
     auth_pass ${vrrp_password}
   }
-  notify_master "/etc/keepalived/switch_vip.py"
+  notify_master "/etc/keepalived/call_function.sh"
 }
 EOF
 service keepalived restart

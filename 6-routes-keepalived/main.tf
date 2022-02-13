@@ -17,10 +17,15 @@
 locals {
   image = "debian-cloud/debian-9"
   machine_type = "e2-small"
-  python_script = templatefile("switch_vip.py.tmpl", {
+  primary_instance_name = "nginx-primary"
+  secondary_instance_name = "nginx-secondary"
+  python_script = templatefile("cloud-function/main.py.tmpl", {
     route_name    = var.route_name
     network_name  = var.network_name
     floating_ip   = var.floating_ip
+    primary_instance = local.primary_instance_name
+    secondary_instance = local.secondary_instance_name
+    zone = var.zone
   })
 }
 
@@ -31,9 +36,83 @@ provider "google" {
   zone    = var.zone
 }
 
+provider "archive" {
+
+}
+
+data "archive_file" "function_zip" {
+  type = "zip"
+  output_path = "${path.module}/function-switch.zip"
+  source {
+    content = local.python_script
+    filename = "main.py"
+  }
+  source {
+    content = file("cloud-function/requirements.txt")
+    filename = "requirements.txt"
+  }
+}
+
 resource "google_project_service" "required_api" {
-  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com"])
+  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com","cloudfunctions.googleapis.com","cloudbuild.googleapis.com","storage.googleapis.com"])
   service  = each.key
+}
+
+resource "google_service_account" "function_service_account" {
+  account_id   = "switcher-function"
+  display_name = "Service Account that is able to create rouets"
+}
+
+resource "google_service_account" "invoker_service_account" {
+  account_id   = "cf-invoker"
+  display_name = "Service Account that is able to invoke the created functions"
+}
+
+resource "google_project_iam_member" "function_sa_membership" {
+  project = var.project_id
+  role    = "roles/compute.networkAdmin"
+  member  = "serviceAccount:${google_service_account.function_service_account.email}"
+}
+
+resource "random_id" "bucketname_suffix" {
+  byte_length = 4
+}
+
+resource "google_storage_bucket" "function_bucket" {
+  depends_on = [google_project_service.required_api]
+  name = "${lower(var.project_id)}-function-${random_id.bucketname_suffix.hex}"
+  location = var.bucket_location
+  force_destroy = true
+}
+
+resource "google_storage_bucket_object" "function_archive" {
+  depends_on = [data.archive_file.function_zip]
+  name = "function-switch.zip"
+  bucket = google_storage_bucket.function_bucket.name
+  source = "${path.module}/function-switch.zip"
+}
+
+resource "google_cloudfunctions_function" "function_switch" {
+  depends_on = [google_project_service.required_api]
+  name        = "switch-route"
+  description = "Function to switch route to primary or secondary VM"
+  runtime     = "python38"
+
+  available_memory_mb   = 256
+  source_archive_bucket = google_storage_bucket.function_bucket.name
+  source_archive_object = google_storage_bucket_object.function_archive.name
+  trigger_http          = true
+  entry_point           = "main"
+}
+
+# IAM entry for all users to invoke the function
+resource "google_cloudfunctions_function_iam_member" "invoker" {
+  project        = var.project_id
+  region         = google_cloudfunctions_function.function_switch.region
+  cloud_function = google_cloudfunctions_function.function_switch.name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${google_service_account.invoker_service_account.email}"
 }
 
 resource "google_compute_network" "failover_vpc" {
@@ -84,7 +163,8 @@ resource "google_compute_firewall" "failover_firewall_vrrp" {
 }
 
 resource "google_compute_instance" "nginx_primary_instance" {
-  name         = "nginx-primary"
+  name         = local.primary_instance_name
+
   machine_type = local.machine_type
   boot_disk {
     initialize_params {
@@ -94,7 +174,8 @@ resource "google_compute_instance" "nginx_primary_instance" {
 
   metadata_startup_script = templatefile("startup-script.tmpl", {
     server_number = 1
-    python_script = local.python_script
+    function_url  = google_cloudfunctions_function.function_switch.https_trigger_url
+    target        = "primary"
     floating_ip   = var.floating_ip
     ip            = var.primary_ip
     peer_ip       = var.secondary_ip
@@ -110,15 +191,15 @@ resource "google_compute_instance" "nginx_primary_instance" {
     subnetwork = google_compute_subnetwork.failover_subnet.id
     access_config {}
     network_ip = var.primary_ip
-
   }
   service_account {
-    scopes = ["compute-rw"]
+    email = google_service_account.invoker_service_account.email 
+    scopes = ["cloud-platform"]
   }
   allow_stopping_for_update = true
 }
 resource "google_compute_instance" "nginx_secondary_instance" {
-  name         = "nginx-secondary"
+  name         = local.secondary_instance_name
   machine_type = local.machine_type
   boot_disk {
     initialize_params {
@@ -127,7 +208,8 @@ resource "google_compute_instance" "nginx_secondary_instance" {
   }
   metadata_startup_script = templatefile("startup-script.tmpl", {
     server_number = 2
-    python_script = local.python_script
+    function_url  = google_cloudfunctions_function.function_switch.https_trigger_url
+    target        = "secondary"
     floating_ip   = var.floating_ip
     ip            = var.secondary_ip
     peer_ip       = var.primary_ip
@@ -143,7 +225,8 @@ resource "google_compute_instance" "nginx_secondary_instance" {
     network_ip = var.secondary_ip
   }
   service_account {
-    scopes = ["compute-rw"]
+    email = google_service_account.invoker_service_account.email 
+    scopes = ["cloud-platform"]
   }
   allow_stopping_for_update = true
 }

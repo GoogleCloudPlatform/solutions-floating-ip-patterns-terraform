@@ -20,6 +20,9 @@ Provision the following resources in Google Cloud by using a Terraform template:
 This tutorial uses billable components of Google Cloud:
 * [Compute Engine](https://cloud.google.com/compute/all-pricing)
 * [Virtual Private Cloud](https://cloud.google.com/vpc/network-pricing#vpc-pricing)
+* [Cloud Functions](https://cloud.google.com/functions/pricing)
+* [Cloud Storage](https://cloud.google.com/storage/pricing)
+* [Cloud Build](https://cloud.google.com/build/pricing)
 
 To generate a cost estimate based on your projected usage, use the [pricing calculator](https://cloud.google.com/products/calculator).
 

@@ -29,7 +29,10 @@ variable "zone" {
   default     = "us-central1-c"
 }
 
-
+variable "bucket_location" {
+  description = "Location to deploy Cloud Storage bucket containing Cloud Function"
+  default     = "US"
+}
 
 variable "network_name" {
   description = "VPC Network name"

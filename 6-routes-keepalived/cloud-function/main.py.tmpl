@@ -1,3 +1,4 @@
+  
 #!/usr/bin/python
 # Copyright 2021 Google LLC
 #
@@ -15,8 +16,9 @@
 #
 import time
 import json
-import httplib
+import http.client as httplib
 from multiprocessing import Process
+import functions_framework
 
 # set the HTTP Proxy host and port
 # like
@@ -43,7 +45,7 @@ def api_request(method, uri, body=None):
   return json.loads(response.read())
 
 def metadata_request(uri):
-  conn = httplib.HTTPConnection('metadata')
+  conn = httplib.HTTPConnection('metadata.google.internal')
   conn.request('GET', uri, None, {'Metadata-Flavor': 'Google'})
   response = conn.getresponse()
   return response.read()
@@ -55,13 +57,7 @@ def get_token():
 
 def get_project_id():
   project_id_uri = '/computeMetadata/v1/project/project-id'
-  return metadata_request(project_id_uri)
-
-def get_instance_id():
-  instance_uri = '/computeMetadata/v1/instance/hostname'
-  full_name = metadata_request(instance_uri)
-  instance_id = full_name[0:full_name.find('.')]
-  return instance_id
+  return (metadata_request(project_id_uri).decode('cp437'))
 
 def get_route(route_id):
   project_id = get_project_id()
@@ -93,52 +89,50 @@ def delete_route(route_id):
     return
   return wait_for_operation(operation)
 
-def get_zone():
-  zone_uri = '/computeMetadata/v1/instance/zone'
-  full_zone = metadata_request(zone_uri)
-  zone_id = full_zone[full_zone.rfind('/')+1:]
-  return zone_id
 
-
-def create_route(route_id, priority):
+def create_route(route_id, instance_id, priority):
   project_id = get_project_id()
-  instance_id = get_instance_id()
-  zone_id = get_zone()
+  zone_id = '${zone}'
   bodyt = '{{"destRange": "${floating_ip}/32", "name": "{3}", "network": "https://www.googleapis.com/compute/v1/projects/{0}/global/networks/${network_name}", "nextHopInstance": "https://www.googleapis.com/compute/v1/projects/{0}/zones/{1}/instances/{2}", "priority": {4}}}'
   body = bodyt.format(project_id, zone_id, instance_id, route_id, priority)
-  print body
+  print(body)
   urt = '/compute/v1/projects/{0}/global/routes?alt=json'
   uri = urt.format(project_id)
   operation = api_request('POST', uri, body)
   return wait_for_operation(operation)
 
 
-def change_route(route_id):
-  create_route(route_id + '-p', 900)
+def change_route(route_id, instance_id):
+  create_route(route_id + '-p', instance_id, 900)
   delete_route(route_id)
-  create_route(route_id, 1000)
+  create_route(route_id, instance_id, 1000)
   delete_route(route_id + '-p')
 
 
-def change_route_async(route_id):
-  p = Process(target=change_route, args=(route_id,))
+def change_route_async(route_id,instance_id):
+  p = Process(target=change_route, args=(route_id,instance_id))
   p.start()
   return p
 
-def main():
+@functions_framework.http
+def main(request):
+  request_json = request.get_json(silent=True)
+  request_args = request.args
+  if request_json and 'target' in request_json and request_json['target'] == 'secondary':
+    instance_id = '${secondary_instance}'
+  elif request_args and 'target' in request_args and request_args['target'] == 'secondary':
+    instance_id = '${secondary_instance}'
+  else:
+    instance_id = '${primary_instance}'
   route_id = '${route_name}'
   route = get_route(route_id)
   next_hop_url = route.get('nextHopInstance', '')
   next_hop_id =   next_hop_url[next_hop_url.rfind('/')+1:]
-  instance_id = get_instance_id()
   processes = []
-
+  print('Switching to ' + instance_id)
   if ((not next_hop_id) or next_hop_id != instance_id):
     # change or more route asyncronously.
-    processes.append(change_route_async(route_id))
+    processes.append(change_route_async(route_id,instance_id))
 
   map(lambda p: p.join(), processes)
-
-
-if __name__ == '__main__':
-  main()
+  return ''

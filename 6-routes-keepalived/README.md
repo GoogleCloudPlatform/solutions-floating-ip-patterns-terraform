@@ -179,4 +179,4 @@ To avoid incurring charges to your Google Cloud account for the resources you cr
 | <a name="input_subnet_range"></a> [subnet\_range](#input\_subnet\_range) | IP address range used for the subnet | `string` | `"10.100.0.0/16"` | no |
 | <a name="input_vrrp_password"></a> [vrrp\_password](#input\_vrrp\_password) | Password used for VRRP between instances | `any` | n/a | yes |
 | <a name="input_zone"></a> [zone](#input\_zone) | Google Cloud Zone used to deploy resources | `string` | `"us-central1-c"` | no |
-| <a name="input_bucket_location"></a> [zone](#input\_bucket_location) | Location to deploy Cloud Storage bucket containing Cloud Function | `string` | `"US"` | no |
+| <a name="input_bucket_location"></a> [bucket_location](#input\_bucket_location) | Location to deploy Cloud Storage bucket containing Cloud Function | `string` | `"US"` | no |

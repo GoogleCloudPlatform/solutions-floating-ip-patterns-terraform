@@ -14,7 +14,7 @@ Provision the following resources in Google Cloud by using a Terraform template:
 * Two Compute Engine instances running nginx 
 * A Compute Engine instance used as an internal client
 * A set of firewall rules to allow the client VM to reach the nginx instances using HTTP, to allow VRRP for keepalived between the nginx instances and to allow connecting by using [SSH through IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding#tunneling_ssh_connections)
-* A routes using the floating IP address as destination and the primary nginx instance as next hop.
+* A route using the floating IP address as destination and the primary nginx instance as next hop.
 * A Cloud Function that dynamically updates the route and is called when `keepalived` notices a state change 
 * A Cloud Storage bucket and an object containing the code for the function
 

@@ -54,13 +54,14 @@ data "archive_file" "function_zip" {
 }
 
 resource "google_project_service" "required_api" {
-  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com", "storage.googleapis.com"])
+  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com","storage.googleapis.com"])
   service  = each.key
+  disable_dependent_services = true
 }
 
 resource "google_service_account" "function_service_account" {
   account_id   = "switcher-function"
-  display_name = "Service Account that is able to create rouets"
+  display_name = "Service Account that is able to create routes"
 }
 
 resource "google_service_account" "invoker_service_account" {

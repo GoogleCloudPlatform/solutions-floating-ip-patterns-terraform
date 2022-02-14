@@ -15,17 +15,17 @@
  */
 
 locals {
-  image = "debian-cloud/debian-9"
-  machine_type = "e2-small"
-  primary_instance_name = "nginx-primary"
+  image                   = "debian-cloud/debian-9"
+  machine_type            = "e2-small"
+  primary_instance_name   = "nginx-primary"
   secondary_instance_name = "nginx-secondary"
   python_script = templatefile("cloud-function/main.py.tmpl", {
-    route_name    = var.route_name
-    network_name  = var.network_name
-    floating_ip   = var.floating_ip
-    primary_instance = local.primary_instance_name
+    route_name         = var.route_name
+    network_name       = var.network_name
+    floating_ip        = var.floating_ip
+    primary_instance   = local.primary_instance_name
     secondary_instance = local.secondary_instance_name
-    zone = var.zone
+    zone               = var.zone
   })
 }
 
@@ -41,20 +41,20 @@ provider "archive" {
 }
 
 data "archive_file" "function_zip" {
-  type = "zip"
+  type        = "zip"
   output_path = "${path.module}/function-switch.zip"
   source {
-    content = local.python_script
+    content  = local.python_script
     filename = "main.py"
   }
   source {
-    content = file("cloud-function/requirements.txt")
+    content  = file("cloud-function/requirements.txt")
     filename = "requirements.txt"
   }
 }
 
 resource "google_project_service" "required_api" {
-  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com","cloudfunctions.googleapis.com","cloudbuild.googleapis.com","storage.googleapis.com"])
+  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com", "storage.googleapis.com"])
   service  = each.key
 }
 
@@ -79,21 +79,21 @@ resource "random_id" "bucketname_suffix" {
 }
 
 resource "google_storage_bucket" "function_bucket" {
-  depends_on = [google_project_service.required_api]
-  name = "${lower(var.project_id)}-function-${random_id.bucketname_suffix.hex}"
-  location = var.bucket_location
+  depends_on    = [google_project_service.required_api]
+  name          = "${lower(var.project_id)}-function-${random_id.bucketname_suffix.hex}"
+  location      = var.bucket_location
   force_destroy = true
 }
 
 resource "google_storage_bucket_object" "function_archive" {
   depends_on = [data.archive_file.function_zip]
-  name = "function-switch.zip"
-  bucket = google_storage_bucket.function_bucket.name
-  source = "${path.module}/function-switch.zip"
+  name       = "function-switch.zip"
+  bucket     = google_storage_bucket.function_bucket.name
+  source     = "${path.module}/function-switch.zip"
 }
 
 resource "google_cloudfunctions_function" "function_switch" {
-  depends_on = [google_project_service.required_api]
+  depends_on  = [google_project_service.required_api]
   name        = "switch-route"
   description = "Function to switch route to primary or secondary VM"
   runtime     = "python38"
@@ -163,7 +163,7 @@ resource "google_compute_firewall" "failover_firewall_vrrp" {
 }
 
 resource "google_compute_instance" "nginx_primary_instance" {
-  name         = local.primary_instance_name
+  name = local.primary_instance_name
 
   machine_type = local.machine_type
   boot_disk {
@@ -193,7 +193,7 @@ resource "google_compute_instance" "nginx_primary_instance" {
     network_ip = var.primary_ip
   }
   service_account {
-    email = google_service_account.invoker_service_account.email 
+    email  = google_service_account.invoker_service_account.email
     scopes = ["cloud-platform"]
   }
   allow_stopping_for_update = true
@@ -225,7 +225,7 @@ resource "google_compute_instance" "nginx_secondary_instance" {
     network_ip = var.secondary_ip
   }
   service_account {
-    email = google_service_account.invoker_service_account.email 
+    email  = google_service_account.invoker_service_account.email
     scopes = ["cloud-platform"]
   }
   allow_stopping_for_update = true

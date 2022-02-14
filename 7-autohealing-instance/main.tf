@@ -121,7 +121,7 @@ resource "google_compute_instance_group_manager" "nginx_instance_group" {
   }
   auto_healing_policies {
     health_check      = google_compute_health_check.autohealing_http_check.id
-    initial_delay_sec = 300
+    initial_delay_sec = 30
   }
 }
 

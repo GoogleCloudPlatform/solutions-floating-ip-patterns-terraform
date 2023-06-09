@@ -22,7 +22,7 @@ provider "google" {
 }
 
 locals {
-  image = "debian-cloud/debian-9"
+  image = "debian-cloud/debian-11"
   machine_type = "e2-small"
 }
 

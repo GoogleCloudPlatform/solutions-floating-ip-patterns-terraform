@@ -15,7 +15,7 @@
  */
 
 locals {
-  image                   = "debian-cloud/debian-9"
+  image                   = "debian-cloud/debian-11"
   machine_type            = "e2-small"
   primary_instance_name   = "nginx-primary"
   secondary_instance_name = "nginx-secondary"

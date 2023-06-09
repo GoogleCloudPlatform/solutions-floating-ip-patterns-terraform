@@ -1,6 +1,6 @@
 # Deploying the equal-cost multipath (ECMP) routes pattern
 
-This document provides instructions on how to deploy the example implementation of the pattern using equal-cost multipath (ECMP) routes as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-using-floating-ip-addresses-in-compute-engine#using_equal-cost_multipath_ecmp_routes) using [Terraform](https://www.terraform.io/).
+This document provides instructions on how to deploy the example implementation of the pattern using equal-cost multipath (ECMP) routes as part of [Patterns for using floating IP addresses in Compute Engine](https://cloud.google.com/architecture/patterns-for-floating-ip-addresses-in-compute-engine#using_equal-cost_multipath_ecmp_routes) using [Terraform](https://www.terraform.io/).
 
 This pattern deploys two [nginx](https://nginx.org/en/) webservers using a floating IP address. When you request the document root (/) from the floating IP address (the IP address of the static route) you receive a response that identifies the first or second web server.
 
@@ -45,7 +45,7 @@ You can complete this tutorial using [Cloud Shell](https://cloud.google.com/shel
 
 1. Authenticate to Google Cloud by running `gcloud auth application-default login`. Alternatively use a service account as described in the [Terraform Google provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
 
-1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/floating-ip-patterns.git`.
+1. If not already done, clone this repository to your local host or Cloud Shell by running `git clone https://github.com/GoogleCloudPlatform/solutions-floating-ip-patterns-terraform.git`.
 
 ## Configuring the Terraform variables
 The Terraform code that you downloaded includes variables that you can use to customize the deployment based on your requirements. For example, you can adjust the subnet CIDR ranges and specify the project where the resources should be deployed.

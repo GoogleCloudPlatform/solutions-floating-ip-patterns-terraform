@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- provider "google" {
+
+provider "google" {
   project = var.project_id
   region  = var.region
   zone    = var.zone
 }
 
 locals {
-  image = "debian-cloud/debian-11"
+  image        = "debian-cloud/debian-11"
   machine_type = "e2-small"
 }
 
 resource "google_project_service" "required_api" {
-  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com"])
-  service  = each.key
+  for_each           = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com"])
+  service            = each.key
+  disable_on_destroy = false
 }
 
 resource "google_compute_network" "failover_vpc" {

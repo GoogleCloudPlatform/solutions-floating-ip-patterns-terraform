@@ -54,9 +54,9 @@ data "archive_file" "function_zip" {
 }
 
 resource "google_project_service" "required_api" {
-  for_each = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com","storage.googleapis.com"])
-  service  = each.key
-  disable_dependent_services = true
+  for_each           = toset(["compute.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com", "storage.googleapis.com"])
+  service            = each.key
+  disable_on_destroy = false
 }
 
 resource "google_service_account" "function_service_account" {
@@ -80,10 +80,11 @@ resource "random_id" "bucketname_suffix" {
 }
 
 resource "google_storage_bucket" "function_bucket" {
-  depends_on    = [google_project_service.required_api]
-  name          = "${lower(var.project_id)}-function-${random_id.bucketname_suffix.hex}"
-  location      = var.bucket_location
-  force_destroy = true
+  depends_on                  = [google_project_service.required_api]
+  name                        = "${lower(var.project_id)}-function-${random_id.bucketname_suffix.hex}"
+  location                    = var.bucket_location
+  uniform_bucket_level_access = true
+  force_destroy               = true
 }
 
 resource "google_storage_bucket_object" "function_archive" {
@@ -94,10 +95,11 @@ resource "google_storage_bucket_object" "function_archive" {
 }
 
 resource "google_cloudfunctions_function" "function_switch" {
-  depends_on  = [google_project_service.required_api]
-  name        = "switch-route"
-  description = "Function to switch route to primary or secondary VM"
-  runtime     = "python38"
+  depends_on            = [google_project_service.required_api]
+  name                  = "switch-route"
+  description           = "Function to switch route to primary or secondary VM"
+  runtime               = "python38"
+  service_account_email = google_service_account.function_service_account.email
 
   available_memory_mb   = 256
   source_archive_bucket = google_storage_bucket.function_bucket.name

@@ -4,7 +4,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -17,8 +17,8 @@ apt-get update
 apt-get -y install nginx keepalived
 echo '<HTML><BODY>This is server ${server_number}</BODY></HTML>' > /var/www/html/index.html
 cat <<EOF >> /etc/network/interfaces
-auto eth0:0
-iface eth0:0 inet static
+auto ens4:0
+iface ens4:0 inet static
   address ${floating_ip}
   netmask 255.255.255.255
 EOF
@@ -29,18 +29,25 @@ TOKEN=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/servic
 curl -H "Authorization: Bearer $TOKEN" ${function_url}?target=${target}
 EOF
 chmod +x /etc/keepalived/call_function.sh
+cat << EOF > /etc/keepalived/pidof.sh
+#!/bin/bash
+/usr/bin/pidof nginx
+ret=\$?
+exit \$ret
+EOF
+chmod +x /etc/keepalived/pidof.sh
 cat << EOF > /etc/keepalived/keepalived.conf
 global_defs {
     script_user www-data
 }
 vrrp_script nginx {
-  script "/bin/pidof nginx"
+  script "/etc/keepalived/pidof.sh"
   interval 2
 }
 
 vrrp_instance floating_ip {
   state ${state}
-  interface eth0
+  interface ens4
   track_script {
     nginx
   }
@@ -49,7 +56,7 @@ vrrp_instance floating_ip {
     ${peer_ip}
   }
   virtual_router_id 50
-  priority ${priority} 
+  priority ${priority}
   authentication {
     auth_type PASS
     auth_pass ${vrrp_password}

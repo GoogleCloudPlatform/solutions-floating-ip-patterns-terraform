@@ -4,7 +4,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -23,16 +23,23 @@ Description=Netcat service for health check
 [Service]
 ExecStart=/bin/nc -k -l ${health_check_port}
 EOF
+cat << EOF > /etc/keepalived/pidof.sh
+#!/bin/bash
+/usr/bin/pidof nginx
+ret=\$?
+exit \$ret
+EOF
+chmod +x /etc/keepalived/pidof.sh
 cat << EOF >> /etc/keepalived/keepalived.conf
 vrrp_script nginx {
-  script "/bin/pidof nginx"
+  script "/etc/keepalived/pidof.sh"
   interval 2
   user www-data
 }
 
 vrrp_instance floating_ip {
   state ${state}
-  interface eth0
+  interface ens4
   track_script {
     nginx
   }

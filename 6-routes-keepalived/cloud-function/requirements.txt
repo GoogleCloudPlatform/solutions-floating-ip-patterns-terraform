@@ -1,2 +1,2 @@
 # Function dependencies:
-functions-framework==3.0.0
+functions-framework==3.7.0

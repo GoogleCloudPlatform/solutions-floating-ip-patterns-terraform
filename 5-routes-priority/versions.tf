@@ -21,5 +21,8 @@ terraform {
       version = "~>5.34.0"
     }
   }
+  provider_meta "google" {
+    module_name = "cloud-solutions/solutions-floating-ip-patterns-terraform-v1"
+  }
   required_version = ">=0.15"
 }
